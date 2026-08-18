@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Escape from Conspiracy - インベントリ管理ツール
 
 身内TRPGセッション用のオリジナルシナリオ「Escape from Conspiracy」向け、
@@ -75,3 +76,7 @@ Netlify を使う場合も同様に、Build command: `npm run build` / Publish d
 - スタッシュ自体のグリッド化(現状はリスト表示)
 - アイテムの取引・譲渡ログ機能
 - GM専用のNPCストック管理画面
+=======
+# trpg_tarkov_system
+Development for Trpg system "tarkovlike"
+>>>>>>> 1fcd86ce36aadd90ac749c90214205a8a088cfba
