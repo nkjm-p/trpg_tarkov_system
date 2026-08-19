@@ -89,14 +89,16 @@ function PlayerPage({ playerId }: { playerId: string }) {
 }
 
 function RoleSelect() {
-  return <div className="flex min-h-screen items-center justify-center bg-tarkov-bg p-4"><div className="w-full max-w-md rounded border border-tarkov-border bg-tarkov-panel p-6">
-    <h1 className="stencil text-xl text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1><p className="mt-1 text-sm text-tarkov-textDim">インベントリ管理ツール</p>
-    <div className="mt-6 grid gap-3 sm:grid-cols-2">
-      <button type="button" onClick={() => navigate('/gm')} className="rounded border border-tarkov-accent/60 p-4 text-left hover:bg-tarkov-accent/10"><span className="stencil block text-sm text-tarkov-accent">GM</span><span className="mt-1 block text-xs text-tarkov-textDim">全プレイヤーを管理</span></button>
-      <button type="button" onClick={() => navigate('/player')} className="rounded border border-tarkov-border p-4 text-left hover:border-tarkov-accent"><span className="stencil block text-sm text-tarkov-text">PLAYER</span><span className="mt-1 block text-xs text-tarkov-textDim">自分の所持品を開く</span></button>
-    </div>
+  return <div className="flex min-h-screen items-center justify-center bg-tarkov-bg p-4">
+    <div className="w-full max-w-md rounded border border-tarkov-border bg-tarkov-panel p-6">
+      <h1 className="stencil text-xl text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1><p className="mt-1 text-sm text-tarkov-textDim">インベントリ管理ツール</p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <button type="button" onClick={() => navigate('/gm')} className="rounded border border-tarkov-accent/60 p-4 text-left hover:bg-tarkov-accent/10"><span className="stencil block text-sm text-tarkov-accent">GM</span><span className="mt-1 block text-xs text-tarkov-textDim">全プレイヤーを管理</span></button>
+        <button type="button" onClick={() => navigate('/player')} className="rounded border border-tarkov-border p-4 text-left hover:border-tarkov-accent"><span className="stencil block text-sm text-tarkov-text">PLAYER</span><span className="mt-1 block text-xs text-tarkov-textDim">自分の所持品を開く</span></button>
+      </div>
     {!isFirebaseConfigured && <p className="mt-5 rounded border border-tarkov-danger/50 bg-tarkov-danger/10 p-3 text-xs text-tarkov-danger">Firebaseが未設定です。.env.example を複製して .env.local を作成してください。</p>}
-  </div></div>;
+    </div>
+  </div>;
 }
 
 function PlayerSelect() {
