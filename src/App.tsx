@@ -4,9 +4,11 @@ import { getItemDef } from './data/items';
 import { getPlacedItemsInContainer, canPlaceItem } from './utils/grid';
 import { StashPanel } from './components/StashPanel';
 import { EquipmentPanel } from './components/EquipmentPanel';
+import { ItemCatalogPanel } from './components/ItemCatalogPanel';
+import { PlayerTabs } from './components/PlayerTabs';
 
 function DndArea() {
-  const { instances, placeInContainer, returnToStash, reset } = useInventory();
+  const { instances, placeInContainer, returnToStash } = useInventory();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
   function handleDragEnd(event: DragEndEvent) {
@@ -52,22 +54,16 @@ function DndArea() {
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="mx-auto grid h-full max-w-6xl grid-cols-1 gap-3 p-3 md:grid-cols-[320px_1fr]">
-        <div className="min-h-[300px] md:h-full">
+      <div className="mx-auto grid h-full max-w-7xl grid-cols-1 gap-3 p-3 lg:grid-cols-[280px_300px_1fr]">
+        <div className="min-h-[300px] lg:h-full">
+          <ItemCatalogPanel />
+        </div>
+        <div className="min-h-[300px] lg:h-full">
           <StashPanel />
         </div>
-        <div className="min-h-[300px] md:h-full">
+        <div className="min-h-[300px] lg:h-full">
           <EquipmentPanel />
         </div>
-      </div>
-      <div className="mx-auto max-w-6xl px-3 pb-3">
-        <button
-          type="button"
-          onClick={reset}
-          className="stencil rounded border border-tarkov-border px-2 py-1 text-[10px] text-tarkov-textDim hover:border-tarkov-danger hover:text-tarkov-danger"
-        >
-          初期状態にリセット
-        </button>
       </div>
     </DndContext>
   );
@@ -81,6 +77,7 @@ export default function App() {
           <h1 className="stencil text-lg text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1>
           <p className="text-xs text-tarkov-textDim">インベントリ管理ツール</p>
         </header>
+        <PlayerTabs />
         <main className="flex-1 overflow-y-auto">
           <DndArea />
         </main>

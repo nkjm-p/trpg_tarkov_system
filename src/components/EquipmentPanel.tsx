@@ -70,16 +70,13 @@ export function EquipmentPanel() {
                     -- 未装備 --
                   </option>
                 )}
-                {equipped && equippedDef && (
-                  <option value={equipped.instanceId}>{equippedDef.name}</option>
-                )}
+                {equipped && equippedDef && <option value={equipped.instanceId}>{equippedDef.name}</option>}
                 {candidates.map((c) => (
                   <option key={c.instanceId} value={c.instanceId}>
                     {c.name}
                   </option>
                 ))}
               </select>
-              
 
               {isContainer && equipped && equippedDef?.containerGrid && (
                 <div className="mt-2">

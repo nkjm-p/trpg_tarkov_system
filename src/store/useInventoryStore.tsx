@@ -1,12 +1,13 @@
-import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
+import { createContext, useCallback, useContext, useMemo, useReducer, useState } from 'react';
 import type { ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { EquipSlotType, ItemInstance } from '../types';
 import { CONTAINER_SLOTS } from '../types';
 import { getItemDef } from '../data/items';
+import { PLAYERS, DEFAULT_PLAYER_ID, type PlayerDef } from '../data/players';
 
-// ── 初期スタッシュの中身(セッション開始時の所持品サンプル) ──
-const STARTER_ITEM_IDS: string[] = [
+// ── 各プレイヤーの初期スタッシュの中身(共通デフォルト) ──
+const DEFAULT_STARTER_ITEM_IDS: string[] = [
   'wpn_krait74',
   'wpn_m9talon',
   'ammo_545',
@@ -27,54 +28,81 @@ const STARTER_ITEM_IDS: string[] = [
   'container_backpack',
 ];
 
-function createInitialInstances(): ItemInstance[] {
-  return STARTER_ITEM_IDS.map((itemId) => ({
+function createInstancesForPlayer(player: PlayerDef): ItemInstance[] {
+  const itemIds = player.starterItemIds ?? DEFAULT_STARTER_ITEM_IDS;
+  return itemIds.map((itemId) => ({
     instanceId: uuidv4(),
     itemId,
     location: { type: 'stash' as const },
   }));
 }
 
+type ByPlayer = Record<string, ItemInstance[]>;
+
+function createInitialState(): ByPlayer {
+  const state: ByPlayer = {};
+  for (const player of PLAYERS) {
+    state[player.id] = createInstancesForPlayer(player);
+  }
+  return state;
+}
+
 // ── Reducer ──────────────────────────────────
 type Action =
-  | { type: 'EQUIP'; instanceId: string; slot: EquipSlotType }
-  | { type: 'UNEQUIP'; slot: EquipSlotType }
-  | { type: 'PLACE_IN_CONTAINER'; instanceId: string; containerInstanceId: string; x: number; y: number }
-  | { type: 'RETURN_TO_STASH'; instanceId: string }
-  | { type: 'RESET' };
+  | { type: 'EQUIP'; playerId: string; instanceId: string; slot: EquipSlotType }
+  | { type: 'UNEQUIP'; playerId: string; slot: EquipSlotType }
+  | { type: 'PLACE_IN_CONTAINER'; playerId: string; instanceId: string; containerInstanceId: string; x: number; y: number }
+  | { type: 'RETURN_TO_STASH'; playerId: string; instanceId: string }
+  | { type: 'ADD_ITEM'; playerId: string; itemId: string }
+  | { type: 'RESET_PLAYER'; playerId: string };
 
-function reducer(state: ItemInstance[], action: Action): ItemInstance[] {
+function reducer(state: ByPlayer, action: Action): ByPlayer {
+  const playerId = action.playerId;
+  const playerInstances = state[playerId] ?? [];
+
   switch (action.type) {
     case 'EQUIP': {
-      let next = state;
-      // 既にそのスロットに装備されているアイテムがあれば、中身ごとスタッシュへ戻す
+      let next = playerInstances;
       const currentlyEquipped = next.find((i) => i.location.type === 'equip' && i.location.slot === action.slot);
       if (currentlyEquipped) {
         next = unequipCascade(next, currentlyEquipped.instanceId);
       }
-      // 対象アイテムがコンテナに入っていた場合、そのコンテナ内の座標情報は不要になるので単純に上書き
       next = next.map((i) =>
         i.instanceId === action.instanceId ? { ...i, location: { type: 'equip', slot: action.slot } } : i
       );
-      return next;
+      return { ...state, [playerId]: next };
     }
     case 'UNEQUIP': {
-      const target = state.find((i) => i.location.type === 'equip' && i.location.slot === action.slot);
+      const target = playerInstances.find((i) => i.location.type === 'equip' && i.location.slot === action.slot);
       if (!target) return state;
-      return unequipCascade(state, target.instanceId);
+      return { ...state, [playerId]: unequipCascade(playerInstances, target.instanceId) };
     }
     case 'PLACE_IN_CONTAINER': {
-      return state.map((i) =>
+      const next = playerInstances.map((i) =>
         i.instanceId === action.instanceId
-          ? { ...i, location: { type: 'container', containerInstanceId: action.containerInstanceId, x: action.x, y: action.y } }
+          ? {
+              ...i,
+              location: { type: 'container' as const, containerInstanceId: action.containerInstanceId, x: action.x, y: action.y },
+            }
           : i
       );
+      return { ...state, [playerId]: next };
     }
     case 'RETURN_TO_STASH': {
-      return unequipCascade(state, action.instanceId);
+      return { ...state, [playerId]: unequipCascade(playerInstances, action.instanceId) };
     }
-    case 'RESET': {
-      return createInitialInstances();
+    case 'ADD_ITEM': {
+      const newInstance: ItemInstance = {
+        instanceId: uuidv4(),
+        itemId: action.itemId,
+        location: { type: 'stash' },
+      };
+      return { ...state, [playerId]: [...playerInstances, newInstance] };
+    }
+    case 'RESET_PLAYER': {
+      const player = PLAYERS.find((p) => p.id === playerId);
+      if (!player) return state;
+      return { ...state, [playerId]: createInstancesForPlayer(player) };
     }
     default:
       return state;
@@ -85,9 +113,9 @@ function reducer(state: ItemInstance[], action: Action): ItemInstance[] {
  * 指定インスタンスをスタッシュへ戻す。
  * それがリグ/バックパックの場合、中に入っている子アイテムも連鎖的にスタッシュへ戻す。
  */
-function unequipCascade(state: ItemInstance[], instanceId: string): ItemInstance[] {
-  const target = state.find((i) => i.instanceId === instanceId);
-  let next = state.map((i) => (i.instanceId === instanceId ? { ...i, location: { type: 'stash' as const } } : i));
+function unequipCascade(instances: ItemInstance[], instanceId: string): ItemInstance[] {
+  const target = instances.find((i) => i.instanceId === instanceId);
+  let next = instances.map((i) => (i.instanceId === instanceId ? { ...i, location: { type: 'stash' as const } } : i));
 
   const def = target ? getItemDef(target.itemId) : undefined;
   const isContainer = def?.equipSlot && CONTAINER_SLOTS.includes(def.equipSlot);
@@ -103,36 +131,66 @@ function unequipCascade(state: ItemInstance[], instanceId: string): ItemInstance
 
 // ── Context ──────────────────────────────────
 interface InventoryContextValue {
+  players: PlayerDef[];
+  activePlayerId: string;
+  setActivePlayerId: (id: string) => void;
   instances: ItemInstance[];
   equipItem: (instanceId: string, slot: EquipSlotType) => void;
   unequipSlot: (slot: EquipSlotType) => void;
   placeInContainer: (instanceId: string, containerInstanceId: string, x: number, y: number) => void;
   returnToStash: (instanceId: string) => void;
-  reset: () => void;
+  addItemToStash: (itemId: string) => void;
+  resetActivePlayer: () => void;
 }
 
 const InventoryContext = createContext<InventoryContextValue | null>(null);
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
-  const [instances, dispatch] = useReducer(reducer, undefined, createInitialInstances);
+  const [byPlayer, dispatch] = useReducer(reducer, undefined, createInitialState);
+  const [activePlayerId, setActivePlayerId] = useState<string>(DEFAULT_PLAYER_ID);
 
-  const equipItem = useCallback((instanceId: string, slot: EquipSlotType) => {
-    dispatch({ type: 'EQUIP', instanceId, slot });
-  }, []);
-  const unequipSlot = useCallback((slot: EquipSlotType) => {
-    dispatch({ type: 'UNEQUIP', slot });
-  }, []);
-  const placeInContainer = useCallback((instanceId: string, containerInstanceId: string, x: number, y: number) => {
-    dispatch({ type: 'PLACE_IN_CONTAINER', instanceId, containerInstanceId, x, y });
-  }, []);
-  const returnToStash = useCallback((instanceId: string) => {
-    dispatch({ type: 'RETURN_TO_STASH', instanceId });
-  }, []);
-  const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
+  const equipItem = useCallback(
+    (instanceId: string, slot: EquipSlotType) => dispatch({ type: 'EQUIP', playerId: activePlayerId, instanceId, slot }),
+    [activePlayerId]
+  );
+  const unequipSlot = useCallback(
+    (slot: EquipSlotType) => dispatch({ type: 'UNEQUIP', playerId: activePlayerId, slot }),
+    [activePlayerId]
+  );
+  const placeInContainer = useCallback(
+    (instanceId: string, containerInstanceId: string, x: number, y: number) =>
+      dispatch({ type: 'PLACE_IN_CONTAINER', playerId: activePlayerId, instanceId, containerInstanceId, x, y }),
+    [activePlayerId]
+  );
+  const returnToStash = useCallback(
+    (instanceId: string) => dispatch({ type: 'RETURN_TO_STASH', playerId: activePlayerId, instanceId }),
+    [activePlayerId]
+  );
+  const addItemToStash = useCallback(
+    (itemId: string) => dispatch({ type: 'ADD_ITEM', playerId: activePlayerId, itemId }),
+    [activePlayerId]
+  );
+  const resetActivePlayer = useCallback(
+    () => dispatch({ type: 'RESET_PLAYER', playerId: activePlayerId }),
+    [activePlayerId]
+  );
+
+  const instances = byPlayer[activePlayerId] ?? [];
 
   const value = useMemo(
-    () => ({ instances, equipItem, unequipSlot, placeInContainer, returnToStash, reset }),
-    [instances, equipItem, unequipSlot, placeInContainer, returnToStash, reset]
+    () => ({
+      players: PLAYERS,
+      activePlayerId,
+      setActivePlayerId,
+      instances,
+      equipItem,
+      unequipSlot,
+      placeInContainer,
+      returnToStash,
+      addItemToStash,
+      resetActivePlayer,
+    }),
+    [activePlayerId, instances, equipItem, unequipSlot, placeInContainer, returnToStash, addItemToStash, resetActivePlayer]
   );
 
   return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;
