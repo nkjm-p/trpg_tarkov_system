@@ -49,6 +49,16 @@ export interface ItemDefinition {
   containerGrid?: { width: number; height: number };
 }
 
+/** TRPGで参照するアイテム固有のルール・数値。 */
+export interface ItemTrpgInfo {
+  /** アイテムを使用したときの主な効果。 */
+  effect: string;
+  /** ルール上の数値や計算式。値が未確定の場合も明示的に記録する。 */
+  properties: { label: string; value: string }[];
+  /** 装備条件、弾薬の互換性、運用上の注意など。 */
+  notes?: string[];
+}
+
 // ── 所持アイテムの実体(インスタンス) ─────────────
 export type ItemLocation =
   | { type: 'stash' } // スタッシュ(未配置リスト)にある

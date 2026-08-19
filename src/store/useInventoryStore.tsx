@@ -1,140 +1,85 @@
-import { createContext, useCallback, useContext, useMemo, useReducer, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { doc, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore';
 import type { EquipSlotType, ItemInstance } from '../types';
 import { CONTAINER_SLOTS } from '../types';
 import { getItemDef } from '../data/items';
-import { PLAYERS, DEFAULT_PLAYER_ID, type PlayerDef } from '../data/players';
+import { PLAYERS, type PlayerDef } from '../data/players';
+import { campaignId, db } from '../firebase';
 
-// ── 各プレイヤーの初期スタッシュの中身(共通デフォルト) ──
-const DEFAULT_STARTER_ITEM_IDS: string[] = [
-  'wpn_krait74',
-  'wpn_m9talon',
-  'ammo_545',
-  'ammo_545',
-  'ammo_9mm',
-  'med_bandage',
-  'med_bandage',
-  'med_kit',
-  'med_painkiller',
-  'food_can',
-  'food_water',
-  'val_goldbar',
-  'gear_helmet',
-  'gear_facecover',
-  'gear_earpiece',
-  'gear_armor',
-  'container_rig',
-  'container_backpack',
+const DEFAULT_STARTER_ITEM_IDS = [
+  'wpn_krait74', 'wpn_m9talon', 'ammo_545', 'ammo_545', 'ammo_9mm',
+  'med_bandage', 'med_bandage', 'med_kit', 'med_painkiller', 'food_can',
+  'food_water', 'val_goldbar', 'gear_helmet', 'gear_facecover', 'gear_earpiece',
+  'gear_armor', 'container_rig', 'container_backpack',
 ];
 
 function createInstancesForPlayer(player: PlayerDef): ItemInstance[] {
-  const itemIds = player.starterItemIds ?? DEFAULT_STARTER_ITEM_IDS;
-  return itemIds.map((itemId) => ({
-    instanceId: uuidv4(),
-    itemId,
-    location: { type: 'stash' as const },
+  return (player.starterItemIds ?? DEFAULT_STARTER_ITEM_IDS).map((itemId) => ({
+    instanceId: uuidv4(), itemId, location: { type: 'stash' as const },
   }));
 }
 
-type ByPlayer = Record<string, ItemInstance[]>;
+type InventoryAction =
+  | { type: 'EQUIP'; instanceId: string; slot: EquipSlotType }
+  | { type: 'UNEQUIP'; slot: EquipSlotType }
+  | { type: 'PLACE_IN_CONTAINER'; instanceId: string; containerInstanceId: string; x: number; y: number }
+  | { type: 'RETURN_TO_STASH'; instanceId: string }
+  | { type: 'ADD_ITEM'; itemId: string }
+  | { type: 'RESET_PLAYER'; player: PlayerDef };
 
-function createInitialState(): ByPlayer {
-  const state: ByPlayer = {};
-  for (const player of PLAYERS) {
-    state[player.id] = createInstancesForPlayer(player);
-  }
-  return state;
-}
-
-// ── Reducer ──────────────────────────────────
-type Action =
-  | { type: 'EQUIP'; playerId: string; instanceId: string; slot: EquipSlotType }
-  | { type: 'UNEQUIP'; playerId: string; slot: EquipSlotType }
-  | { type: 'PLACE_IN_CONTAINER'; playerId: string; instanceId: string; containerInstanceId: string; x: number; y: number }
-  | { type: 'RETURN_TO_STASH'; playerId: string; instanceId: string }
-  | { type: 'ADD_ITEM'; playerId: string; itemId: string }
-  | { type: 'RESET_PLAYER'; playerId: string };
-
-function reducer(state: ByPlayer, action: Action): ByPlayer {
-  const playerId = action.playerId;
-  const playerInstances = state[playerId] ?? [];
-
-  switch (action.type) {
-    case 'EQUIP': {
-      let next = playerInstances;
-      const currentlyEquipped = next.find((i) => i.location.type === 'equip' && i.location.slot === action.slot);
-      if (currentlyEquipped) {
-        next = unequipCascade(next, currentlyEquipped.instanceId);
-      }
-      next = next.map((i) =>
-        i.instanceId === action.instanceId ? { ...i, location: { type: 'equip', slot: action.slot } } : i
-      );
-      return { ...state, [playerId]: next };
-    }
-    case 'UNEQUIP': {
-      const target = playerInstances.find((i) => i.location.type === 'equip' && i.location.slot === action.slot);
-      if (!target) return state;
-      return { ...state, [playerId]: unequipCascade(playerInstances, target.instanceId) };
-    }
-    case 'PLACE_IN_CONTAINER': {
-      const next = playerInstances.map((i) =>
-        i.instanceId === action.instanceId
-          ? {
-              ...i,
-              location: { type: 'container' as const, containerInstanceId: action.containerInstanceId, x: action.x, y: action.y },
-            }
-          : i
-      );
-      return { ...state, [playerId]: next };
-    }
-    case 'RETURN_TO_STASH': {
-      return { ...state, [playerId]: unequipCascade(playerInstances, action.instanceId) };
-    }
-    case 'ADD_ITEM': {
-      const newInstance: ItemInstance = {
-        instanceId: uuidv4(),
-        itemId: action.itemId,
-        location: { type: 'stash' },
-      };
-      return { ...state, [playerId]: [...playerInstances, newInstance] };
-    }
-    case 'RESET_PLAYER': {
-      const player = PLAYERS.find((p) => p.id === playerId);
-      if (!player) return state;
-      return { ...state, [playerId]: createInstancesForPlayer(player) };
-    }
-    default:
-      return state;
-  }
-}
-
-/**
- * 指定インスタンスをスタッシュへ戻す。
- * それがリグ/バックパックの場合、中に入っている子アイテムも連鎖的にスタッシュへ戻す。
- */
 function unequipCascade(instances: ItemInstance[], instanceId: string): ItemInstance[] {
-  const target = instances.find((i) => i.instanceId === instanceId);
-  let next = instances.map((i) => (i.instanceId === instanceId ? { ...i, location: { type: 'stash' as const } } : i));
-
-  const def = target ? getItemDef(target.itemId) : undefined;
-  const isContainer = def?.equipSlot && CONTAINER_SLOTS.includes(def.equipSlot);
-  if (isContainer) {
-    next = next.map((i) =>
-      i.location.type === 'container' && i.location.containerInstanceId === instanceId
-        ? { ...i, location: { type: 'stash' as const } }
-        : i
+  const target = instances.find((item) => item.instanceId === instanceId);
+  let next = instances.map((item) => item.instanceId === instanceId
+    ? { ...item, location: { type: 'stash' as const } }
+    : item
+  );
+  const definition = target ? getItemDef(target.itemId) : undefined;
+  if (definition?.equipSlot && CONTAINER_SLOTS.includes(definition.equipSlot)) {
+    next = next.map((item) => item.location.type === 'container' && item.location.containerInstanceId === instanceId
+      ? { ...item, location: { type: 'stash' as const } }
+      : item
     );
   }
   return next;
 }
 
-// ── Context ──────────────────────────────────
+function applyAction(instances: ItemInstance[], action: InventoryAction): ItemInstance[] {
+  switch (action.type) {
+    case 'EQUIP': {
+      const existing = instances.find((item) => item.location.type === 'equip' && item.location.slot === action.slot);
+      const next = existing ? unequipCascade(instances, existing.instanceId) : instances;
+      return next.map((item) => item.instanceId === action.instanceId
+        ? { ...item, location: { type: 'equip', slot: action.slot } }
+        : item
+      );
+    }
+    case 'UNEQUIP': {
+      const target = instances.find((item) => item.location.type === 'equip' && item.location.slot === action.slot);
+      return target ? unequipCascade(instances, target.instanceId) : instances;
+    }
+    case 'PLACE_IN_CONTAINER':
+      return instances.map((item) => item.instanceId === action.instanceId
+        ? { ...item, location: { type: 'container' as const, containerInstanceId: action.containerInstanceId, x: action.x, y: action.y } }
+        : item
+      );
+    case 'RETURN_TO_STASH':
+      return unequipCascade(instances, action.instanceId);
+    case 'ADD_ITEM':
+      return [...instances, { instanceId: uuidv4(), itemId: action.itemId, location: { type: 'stash' } }];
+    case 'RESET_PLAYER':
+      return createInstancesForPlayer(action.player);
+  }
+}
+
 interface InventoryContextValue {
   players: PlayerDef[];
   activePlayerId: string;
-  setActivePlayerId: (id: string) => void;
+  activePlayer: PlayerDef;
   instances: ItemInstance[];
+  isLoading: boolean;
+  error: string | null;
   equipItem: (instanceId: string, slot: EquipSlotType) => void;
   unequipSlot: (slot: EquipSlotType) => void;
   placeInContainer: (instanceId: string, containerInstanceId: string, x: number, y: number) => void;
@@ -145,59 +90,89 @@ interface InventoryContextValue {
 
 const InventoryContext = createContext<InventoryContextValue | null>(null);
 
-export function InventoryProvider({ children }: { children: ReactNode }) {
-  const [byPlayer, dispatch] = useReducer(reducer, undefined, createInitialState);
-  const [activePlayerId, setActivePlayerId] = useState<string>(DEFAULT_PLAYER_ID);
+export function InventoryProvider({ playerId, children }: { playerId: string; children: ReactNode }) {
+  const player = PLAYERS.find((entry) => entry.id === playerId) ?? PLAYERS[0];
+  const [instances, setInstances] = useState<ItemInstance[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const equipItem = useCallback(
-    (instanceId: string, slot: EquipSlotType) => dispatch({ type: 'EQUIP', playerId: activePlayerId, instanceId, slot }),
-    [activePlayerId]
-  );
-  const unequipSlot = useCallback(
-    (slot: EquipSlotType) => dispatch({ type: 'UNEQUIP', playerId: activePlayerId, slot }),
-    [activePlayerId]
-  );
-  const placeInContainer = useCallback(
-    (instanceId: string, containerInstanceId: string, x: number, y: number) =>
-      dispatch({ type: 'PLACE_IN_CONTAINER', playerId: activePlayerId, instanceId, containerInstanceId, x, y }),
-    [activePlayerId]
-  );
-  const returnToStash = useCallback(
-    (instanceId: string) => dispatch({ type: 'RETURN_TO_STASH', playerId: activePlayerId, instanceId }),
-    [activePlayerId]
-  );
-  const addItemToStash = useCallback(
-    (itemId: string) => dispatch({ type: 'ADD_ITEM', playerId: activePlayerId, itemId }),
-    [activePlayerId]
-  );
-  const resetActivePlayer = useCallback(
-    () => dispatch({ type: 'RESET_PLAYER', playerId: activePlayerId }),
-    [activePlayerId]
-  );
+  useEffect(() => {
+    const firestore = db;
+    if (!firestore) {
+      setError('Firebaseの設定が見つかりません。.env.localを設定してください。');
+      setIsLoading(false);
+      return;
+    }
 
-  const instances = byPlayer[activePlayerId] ?? [];
+    setIsLoading(true);
+    setError(null);
+    const playerRef = doc(firestore, 'campaigns', campaignId, 'players', player.id);
+    return onSnapshot(playerRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        void runTransaction(firestore, async (transaction) => {
+          const current = await transaction.get(playerRef);
+          if (!current.exists()) transaction.set(playerRef, {
+            name: player.name,
+            instances: createInstancesForPlayer(player),
+            schemaVersion: 1,
+            updatedAt: serverTimestamp(),
+          });
+        }).catch(() => setError('初期データの作成に失敗しました。Firestoreのルールを確認してください。'));
+        return;
+      }
+      const data = snapshot.data();
+      setInstances(Array.isArray(data.instances) ? (data.instances as ItemInstance[]) : []);
+      setIsLoading(false);
+    }, () => {
+      setError('Firestoreとの同期に失敗しました。接続とFirestoreのルールを確認してください。');
+      setIsLoading(false);
+    });
+  }, [player.id, player.name]);
 
-  const value = useMemo(
-    () => ({
-      players: PLAYERS,
-      activePlayerId,
-      setActivePlayerId,
-      instances,
-      equipItem,
-      unequipSlot,
-      placeInContainer,
-      returnToStash,
-      addItemToStash,
-      resetActivePlayer,
-    }),
-    [activePlayerId, instances, equipItem, unequipSlot, placeInContainer, returnToStash, addItemToStash, resetActivePlayer]
-  );
+  const commit = useCallback(async (action: InventoryAction) => {
+    const firestore = db;
+    if (!firestore) return;
+    const playerRef = doc(firestore, 'campaigns', campaignId, 'players', player.id);
+    setError(null);
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        const snapshot = await transaction.get(playerRef);
+        const current = snapshot.exists() && Array.isArray(snapshot.data().instances)
+          ? (snapshot.data().instances as ItemInstance[])
+          : createInstancesForPlayer(player);
+        transaction.set(playerRef, {
+          name: player.name,
+          instances: applyAction(current, action),
+          schemaVersion: 1,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+      });
+    } catch {
+      setError('変更を保存できませんでした。ネットワーク接続とFirestoreのルールを確認してください。');
+    }
+  }, [player]);
+
+  const value = useMemo(() => ({
+    players: PLAYERS,
+    activePlayerId: player.id,
+    activePlayer: player,
+    instances,
+    isLoading,
+    error,
+    equipItem: (instanceId: string, slot: EquipSlotType) => void commit({ type: 'EQUIP', instanceId, slot }),
+    unequipSlot: (slot: EquipSlotType) => void commit({ type: 'UNEQUIP', slot }),
+    placeInContainer: (instanceId: string, containerInstanceId: string, x: number, y: number) =>
+      void commit({ type: 'PLACE_IN_CONTAINER', instanceId, containerInstanceId, x, y }),
+    returnToStash: (instanceId: string) => void commit({ type: 'RETURN_TO_STASH', instanceId }),
+    addItemToStash: (itemId: string) => void commit({ type: 'ADD_ITEM', itemId }),
+    resetActivePlayer: () => void commit({ type: 'RESET_PLAYER', player }),
+  }), [commit, error, instances, isLoading, player]);
 
   return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;
 }
 
 export function useInventory(): InventoryContextValue {
-  const ctx = useContext(InventoryContext);
-  if (!ctx) throw new Error('useInventory must be used within InventoryProvider');
-  return ctx;
+  const context = useContext(InventoryContext);
+  if (!context) throw new Error('useInventory must be used within InventoryProvider');
+  return context;
 }

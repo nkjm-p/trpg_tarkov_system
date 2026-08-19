@@ -1,7 +1,7 @@
 import { useInventory } from '../store/useInventoryStore';
 
-export function PlayerTabs() {
-  const { players, activePlayerId, setActivePlayerId, resetActivePlayer } = useInventory();
+export function PlayerTabs({ onPlayerChange }: { onPlayerChange: (playerId: string) => void }) {
+  const { players, activePlayerId, resetActivePlayer } = useInventory();
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto border-b border-tarkov-border bg-tarkov-panel px-3 py-2">
@@ -11,7 +11,7 @@ export function PlayerTabs() {
           <button
             key={p.id}
             type="button"
-            onClick={() => setActivePlayerId(p.id)}
+            onClick={() => onPlayerChange(p.id)}
             className={`shrink-0 rounded border px-3 py-1 text-xs transition-colors ${
               p.id === activePlayerId
                 ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent'
