@@ -1,6 +1,8 @@
 # Escape from Conspiracy Inventory
 
-身内で行うTRPG「Escape from Conspiracy」用の、Escape from Tarkov風インベントリ管理ツールです。GMとPLが同じ所持品状態をリアルタイムで共有します。
+身内で行うTRPG「Escape from Conspiracy」用の、Escape from Tarkov風インベントリ管理ツールです。
+
+GMとPLが同じ所持品状態をリアルタイムで共有します。
 
 ## 主な機能
 
@@ -41,6 +43,8 @@ npx.cmd firebase-tools deploy --only firestore:rules
 ```
 
 詳細は [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) を参照してください。`.env.local` は秘密情報を含む可能性があるためGit管理しません。一方、`.firebaserc` はFirebaseプロジェクトの対応情報のみであり、Git管理します。
+
+Vercelに公開する際は後述の「検証とデプロイ」を参考に実施してください。
 
 ## 画面URL
 
@@ -108,3 +112,11 @@ Vercelへ公開する場合は、Firebase設定値をVercelのEnvironment Variab
 ## 変更履歴
 
 変更履歴は [CHANGELOG.md](./CHANGELOG.md) で管理します。機能変更時は、`package.json` のバージョンとCHANGELOGを同時に更新してください。
+
+## TODO
+- アイテムセットを作成
+  - 各アイテムの能力値を設定
+  - 初セッション用のアイテムリストを準備
+- スタッシュ内のアイテムに削除機能を追加
+- PLの各画面に所持金を表示
+- 変更対象外設定ファイルをenvフォルダに移動（参照変更有無を要確認）
