@@ -10,6 +10,8 @@ import { EquipmentPanel } from './components/EquipmentPanel';
 import { ItemCatalogPanel } from './components/ItemCatalogPanel';
 import { PlayerTabs } from './components/PlayerTabs';
 import { MapPanel } from './components/MapPanel';
+import { MapProvider } from './store/useMapStore';
+import { MapView } from './components/MapView';
 
 function navigate(path: string) {
   window.history.pushState({}, '', path);
@@ -77,34 +79,67 @@ function SyncNotice() {
 //   </div>;
 // }
 
+// function InventoryWorkspace({ isGm, onPlayerChange }: { isGm: boolean; onPlayerChange?: (id: string) => void }) {
+//   const { activePlayer } = useInventory();
+//   const [activeTab, setActiveTab] = useState<'inventory' | 'map'>('inventory');
+//   return <div className="flex h-screen flex-col bg-tarkov-bg">
+//     <header className="flex items-center gap-3 border-b border-tarkov-border bg-tarkov-panel px-4 py-3">
+//       <div><h1 className="stencil text-lg text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1><p className="text-xs text-tarkov-textDim">{isGm ? 'GM管理画面' : `${activePlayer.name} のインベントリ`}</p></div>
+//       <div className="ml-auto flex gap-1">
+//         <button type="button" onClick={() => setActiveTab('inventory')} className={`stencil rounded border px-3 py-1 text-xs ${activeTab === 'inventory' ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent' : 'border-tarkov-border text-tarkov-textDim hover:border-tarkov-accentDim'}`}>インベントリ</button>
+//         <button type="button" onClick={() => setActiveTab('map')} className={`stencil rounded border px-3 py-1 text-xs ${activeTab === 'map' ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent' : 'border-tarkov-border text-tarkov-textDim hover:border-tarkov-accentDim'}`}>マップ</button>
+//       </div>
+//       <button type="button" onClick={() => navigate(isGm ? '/' : '/player')} className="rounded border border-tarkov-border px-2 py-1 text-xs text-tarkov-textDim hover:border-tarkov-accent">戻る</button>
+//     </header>
+//     {isGm && onPlayerChange && <PlayerTabs onPlayerChange={onPlayerChange} />}
+//     <SyncNotice />
+//     <main className="flex-1 overflow-y-auto">{activeTab === 'inventory' ? <DndArea /> : <MapPanel />}</main>
+//   </div>;
+// }
+
+// function GmPage() {
+//   const [playerId, setPlayerId] = useState(DEFAULT_PLAYER_ID);
+//   return <InventoryProvider playerId={playerId}><InventoryWorkspace isGm onPlayerChange={setPlayerId} /></InventoryProvider>;
+// }
+
+// function PlayerPage({ playerId }: { playerId: string }) {
+//   const player = PLAYERS.find((entry) => entry.id === playerId);
+//   useEffect(() => { if (player) localStorage.setItem('efc-inventory-player-id', player.id); }, [player]);
+//   if (!player) return <NotFound />;
+//   return <InventoryProvider playerId={player.id}><InventoryWorkspace isGm={false} /></InventoryProvider>;
+// }
+
 function InventoryWorkspace({ isGm, onPlayerChange }: { isGm: boolean; onPlayerChange?: (id: string) => void }) {
   const { activePlayer } = useInventory();
-  const [activeTab, setActiveTab] = useState<'inventory' | 'map'>('inventory');
+  const [tab, setTab] = useState<'inventory' | 'map'>('inventory');
+
   return <div className="flex h-screen flex-col bg-tarkov-bg">
     <header className="flex items-center gap-3 border-b border-tarkov-border bg-tarkov-panel px-4 py-3">
       <div><h1 className="stencil text-lg text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1><p className="text-xs text-tarkov-textDim">{isGm ? 'GM管理画面' : `${activePlayer.name} のインベントリ`}</p></div>
-      <div className="ml-auto flex gap-1">
-        <button type="button" onClick={() => setActiveTab('inventory')} className={`stencil rounded border px-3 py-1 text-xs ${activeTab === 'inventory' ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent' : 'border-tarkov-border text-tarkov-textDim hover:border-tarkov-accentDim'}`}>インベントリ</button>
-        <button type="button" onClick={() => setActiveTab('map')} className={`stencil rounded border px-3 py-1 text-xs ${activeTab === 'map' ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent' : 'border-tarkov-border text-tarkov-textDim hover:border-tarkov-accentDim'}`}>マップ</button>
-      </div>
-      <button type="button" onClick={() => navigate(isGm ? '/' : '/player')} className="rounded border border-tarkov-border px-2 py-1 text-xs text-tarkov-textDim hover:border-tarkov-accent">戻る</button>
+      <button type="button" onClick={() => navigate(isGm ? '/' : '/player')} className="ml-auto rounded border border-tarkov-border px-2 py-1 text-xs text-tarkov-textDim hover:border-tarkov-accent">戻る</button>
     </header>
     {isGm && onPlayerChange && <PlayerTabs onPlayerChange={onPlayerChange} />}
+    <div className="flex gap-1 border-b border-tarkov-border bg-tarkov-panel px-3 pt-2">
+      <button type="button" onClick={() => setTab('inventory')} className={`stencil rounded-t px-3 py-1.5 text-[11px] ${tab === 'inventory' ? 'border border-b-0 border-tarkov-accent bg-tarkov-bg text-tarkov-accent' : 'text-tarkov-textDim'}`}>インベントリ</button>
+      <button type="button" onClick={() => setTab('map')} className={`stencil rounded-t px-3 py-1.5 text-[11px] ${tab === 'map' ? 'border border-b-0 border-tarkov-accent bg-tarkov-bg text-tarkov-accent' : 'text-tarkov-textDim'}`}>マップ</button>
+    </div>
     <SyncNotice />
-    <main className="flex-1 overflow-y-auto">{activeTab === 'inventory' ? <DndArea /> : <MapPanel />}</main>
+    <main className="flex-1 overflow-y-auto p-3">
+      {tab === 'inventory' ? <DndArea /> : <MapView isGm={isGm} activePlayerId={activePlayer.id} />}
+    </main>
   </div>;
 }
 
 function GmPage() {
   const [playerId, setPlayerId] = useState(DEFAULT_PLAYER_ID);
-  return <InventoryProvider playerId={playerId}><InventoryWorkspace isGm onPlayerChange={setPlayerId} /></InventoryProvider>;
+  return <InventoryProvider playerId={playerId}><MapProvider><InventoryWorkspace isGm onPlayerChange={setPlayerId} /></MapProvider></InventoryProvider>;
 }
 
 function PlayerPage({ playerId }: { playerId: string }) {
   const player = PLAYERS.find((entry) => entry.id === playerId);
   useEffect(() => { if (player) localStorage.setItem('efc-inventory-player-id', player.id); }, [player]);
   if (!player) return <NotFound />;
-  return <InventoryProvider playerId={player.id}><InventoryWorkspace isGm={false} /></InventoryProvider>;
+  return <InventoryProvider playerId={player.id}><MapProvider><InventoryWorkspace isGm={false} /></MapProvider></InventoryProvider>;
 }
 
 function RoleSelect() {

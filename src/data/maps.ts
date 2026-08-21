@@ -1,0 +1,675 @@
+import type { MapDefinition } from '../types';
+
+/**
+ * マップ・ルートエリアのマスタ定義。
+ * 画像は public/maps/ 配下に配置し、imageUrl は "/maps/xxx.jpg" のように指定します。
+ * GMはここに実際のマップとルートエリアを追加・編集してください。
+ */
+export const MAP_DEFINITIONS: MapDefinition[] = [
+  // ───── CUSTOMS ──────────────────────────
+  {
+    id: 'map_customs',
+    name: 'CUSTOMS',
+    imageUrl: '/maps/customs/Customs_Map_0.5.4.823.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/customs/Customs_Showcase_23.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/customs/Customs_Showcase_11.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/customs/Customs_Showcase_9.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/customs/Customs_Showcase_7.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/customs/Customs_Showcase_14.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/customs/Customs_Showcase_12.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/customs/Customs_Showcase_2.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank_warehouse',
+        name: '貯水タンク前倉庫エリア',
+        imageUrl: '/maps/customs/Customs_Showcase_3.jpg',
+        mapX: 13,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+    ],
+  },
+  // ───── WOODS ──────────────────────────
+  {
+    id: 'map_woods',
+    name: 'WOODS',
+    imageUrl: '/maps/Woods_Map_0.5.4.823.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/woods_warehouse.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/woods_gasstation.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/woods_dormitory.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/woods_gasstation.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/woods_new_building.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/woods_old_building.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/woods_water_tank.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+    ],
+  },
+  // ───── INTERCHANGE ──────────────────────────
+  {
+    id: 'map_interchange',
+    name: 'INTERCHANGE',
+    imageUrl: '/maps/OfficialInterchangePaperMap.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/OfficialInterchangePaperMap.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/interchange_gasstation.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/interchange_dormitory.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/interchange_new_gasstation.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/interchange_new_building.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/interchange_old_building.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/interchange_water_tank.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+    ],
+  },
+  // ───── SHORELINE ──────────────────────────
+  {
+    id: 'map_shoreline',
+    name: 'SHORELINE',
+    imageUrl: '/maps/Map_Shoreline.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/shoreline_warehouse.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/shoreline_gasstation.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/shoreline_dormitory.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/shoreline_new_gasstation.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/shoreline_new_building.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/shoreline_old_building.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/shoreline_water_tank.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+    ],
+  },
+  // ───── RESERVE ──────────────────────────
+  {
+    id: 'map_reserve',
+    name: 'RESERVE',
+    imageUrl: '/maps/Reserve_Map_Translated.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/reserve_warehouse.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/reserve_old_gasstation.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/reserve_dormitory.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/reserve_new_gasstation.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/reserve_new_building.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/reserve_old_building.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/reserve_water_tank.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+    ],
+  },
+  // ───── FACTORY ──────────────────────────
+  {
+    id: 'map_factory',
+    name: 'FACTORY',
+    imageUrl: '/maps/Factory_Map_0.5.4.823.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/Factory_warehouse.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/Factory_gasstation.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/Factory_dormitory.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/Factory_gasstation.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/Factory_new_building.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/Factory_old_building.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/Factory_water_tank.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+    ],
+  },
+  // ───── LABS ──────────────────────────
+  {
+    id: 'map_labs',
+    name: 'LABS',
+    imageUrl: '/maps/TheLabMapFull.jpg',
+    gridWidth: 20,
+    gridHeight: 14,
+    routeAreas: [
+      {
+        id: 'area_warehouse',
+        name: '旧倉庫エリア',
+        imageUrl: '/maps/Labs_warehouse.jpg',
+        mapX: 4,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_gasstation',
+        name: '旧ガソリンスタンド',
+        imageUrl: '/maps/Labs_old_gasstation.jpg',
+        mapX: 9.5,
+        mapY: 10,
+        routableSpots: [
+          { id: 'spot_gs_shop', name: '売店', x: 0.3, y: 0.5, description: '食料や日用品が残っているかもしれない。' },
+          { id: 'spot_gs_tank', name: '地下タンク', x: 0.7, y: 0.7, description: '燃料の備蓄場所。' },
+        ],
+      },
+      {
+        id: 'area_dormitory',
+        name: '宿舎エリア',
+        imageUrl: '/maps/Labs_dormitory.jpg',
+        mapX: 9,
+        mapY: 2,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_gasstation',
+        name: '新ガソリンスタンドエリア',
+        imageUrl: '/maps/Labs_new_gasstation.jpg',
+        mapX: 11.3,
+        mapY: 4,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_new_building',
+        name: '新建築エリア',
+        imageUrl: '/maps/Labs_new_building.jpg',
+        mapX: 8,
+        mapY: 7,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_old_building',
+        name: '旧建築エリア',
+        imageUrl: '/maps/Labs_old_building.jpg',
+        mapX: 10,
+        mapY: 6,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+      {
+        id: 'area_water_tank',
+        name: '貯水タンクエリア',
+        imageUrl: '/maps/Labs_water_tank.jpg',
+        mapX: 12,
+        mapY: 9,
+        routableSpots: [
+          { id: 'spot_wh_entrance', name: '正面ゲート', x: 0.1, y: 0.85, description: '正面出入口。見通しが悪い。' },
+          { id: 'spot_wh_office', name: '管理事務所', x: 0.55, y: 0.3, description: '書類や鍵が見つかるかもしれない。' },
+          { id: 'spot_wh_exit', name: '裏口', x: 0.9, y: 0.2, description: '外周道路へ抜けられる。' },
+        ],
+      },
+    ],
+  },
+];
+
+export function getMapDef(mapId: string): MapDefinition | undefined {
+  return MAP_DEFINITIONS.find((m) => m.id === mapId);
+}

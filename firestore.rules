@@ -2,9 +2,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // This is an intentionally unauthenticated, private-group shared board.
-    // Add authentication-based rules before exposing it outside the group.
     match /campaigns/{campaignId}/players/{playerId} {
+      allow read, write: if true;
+    }
+    match /campaigns/{campaignId}/mapState/{mapDocId} {
       allow read, write: if true;
     }
   }
 }
+
+// rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     // This is an intentionally unauthenticated, private-group shared board.
+//     // Add authentication-based rules before exposing it outside the group.
+//     match /campaigns/{campaignId}/players/{playerId} {
+//       allow read, write: if true;
+//     }
+//   }
+// }

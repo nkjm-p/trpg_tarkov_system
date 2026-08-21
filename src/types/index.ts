@@ -85,14 +85,58 @@ export interface PlacedItem {
 }
 
 // ── マップ関連 ─────────────────────────────
-export interface MapAreaDef {
+// export interface MapAreaDef {
+//   id: string;
+//   name: string;
+//   /** マップグリッド上のX座標(マス単位) */
+//   x: number;
+//   /** マップグリッド上のY座標(マス単位) */
+//   y: number;
+//   description?: string;
+//   /** このエリアからルート移動可能な隣接エリアのID一覧(双方向で記述すること) */
+//   connections: string[];
+// }
+
+
+// ── マップ機能 ───────────────────────────
+/** ルートエリア内の個別のルート可能地点(拠点・出口・アイテムスポットなど) */
+export interface RoutableSpot {
   id: string;
   name: string;
-  /** マップグリッド上のX座標(マス単位) */
+  /** ルートエリア画像上の相対位置(0〜1)。左上原点。 */
   x: number;
-  /** マップグリッド上のY座標(マス単位) */
   y: number;
   description?: string;
-  /** このエリアからルート移動可能な隣接エリアのID一覧(双方向で記述すること) */
-  connections: string[];
+  icon?: string;
+}
+
+/** マップ上の1エリア。拡大表示するとルート可能地点の詳細が見える。 */
+export interface RouteAreaDefinition {
+  id: string;
+  name: string;
+  /** 拡大表示用の画像パス(public配下推奨) */
+  imageUrl: string;
+  /** 親マップのグリッド座標(マス単位) */
+  mapX: number;
+  mapY: number;
+  /** このエリアが保持するルート可能地点インスタンスのリスト */
+  routableSpots: RoutableSpot[];
+}
+
+/** マップ自体の定義。背景画像 + マス目 + ルートエリア群。 */
+export interface MapDefinition {
+  id: string;
+  name: string;
+  imageUrl: string;
+  gridWidth: number;
+  gridHeight: number;
+  routeAreas: RouteAreaDefinition[];
+}
+
+/** プレイヤーキャラクターのマップ上の現在位置(Firestore同期対象)。 */
+export interface CharacterMapPosition {
+  playerId: string;
+  mapId: string;
+  x: number;
+  y: number;
 }
