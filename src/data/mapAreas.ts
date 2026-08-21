@@ -1,4 +1,11 @@
-import type { MapAreaDef } from '../types';
+export interface MapAreaDef {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  description: string;
+  connections: string[];
+}
 
 /**
  * 「Escape from Conspiracy」シナリオ用のマップエリア定義。

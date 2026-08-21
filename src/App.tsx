@@ -9,7 +9,7 @@ import { StashPanel } from './components/StashPanel';
 import { EquipmentPanel } from './components/EquipmentPanel';
 import { ItemCatalogPanel } from './components/ItemCatalogPanel';
 import { PlayerTabs } from './components/PlayerTabs';
-import { MapPanel } from './components/MapPanel';
+// import { MapPanel } from './components/MapPanel';
 import { MapProvider } from './store/useMapStore';
 import { MapView } from './components/MapView';
 
