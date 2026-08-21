@@ -1,11 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { doc, onSnapshot, runTransaction, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore';
 import type { EquipSlotType, ItemInstance } from '../types';
 import { CONTAINER_SLOTS } from '../types';
 import { getItemDef } from '../data/items';
-import { getRoutableAreas } from '../data/mapAreas';
 import { PLAYERS, type PlayerDef } from '../data/players';
 import { campaignId, db } from '../firebase';
 
@@ -79,7 +78,6 @@ interface InventoryContextValue {
   activePlayerId: string;
   activePlayer: PlayerDef;
   instances: ItemInstance[];
-  position: string | null;
   isLoading: boolean;
   error: string | null;
   equipItem: (instanceId: string, slot: EquipSlotType) => void;
@@ -88,7 +86,6 @@ interface InventoryContextValue {
   returnToStash: (instanceId: string) => void;
   addItemToStash: (itemId: string) => void;
   resetActivePlayer: () => void;
-  movePlayerTo: (areaId: string) => void;
 }
 
 const InventoryContext = createContext<InventoryContextValue | null>(null);
@@ -96,7 +93,6 @@ const InventoryContext = createContext<InventoryContextValue | null>(null);
 export function InventoryProvider({ playerId, children }: { playerId: string; children: ReactNode }) {
   const player = PLAYERS.find((entry) => entry.id === playerId) ?? PLAYERS[0];
   const [instances, setInstances] = useState<ItemInstance[]>([]);
-  const [position, setPosition] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -126,7 +122,6 @@ export function InventoryProvider({ playerId, children }: { playerId: string; ch
       }
       const data = snapshot.data();
       setInstances(Array.isArray(data.instances) ? (data.instances as ItemInstance[]) : []);
-      setPosition(typeof data.position === 'string' ? data.position : null);
       setIsLoading(false);
     }, () => {
       setError('Firestoreとの同期に失敗しました。接続とFirestoreのルールを確認してください。');
@@ -157,27 +152,11 @@ export function InventoryProvider({ playerId, children }: { playerId: string; ch
     }
   }, [player]);
 
-  /** マップ上の現在位置をFirestoreへ保存する。instancesの構造には触れず、positionフィールドのみをmergeする。 */
-  const movePlayerTo = useCallback(async (areaId: string) => {
-    const firestore = db;
-    if (!firestore) return;
-    const isRoutable = getRoutableAreas(position).some((area) => area.id === areaId);
-    if (!isRoutable) return;
-    const playerRef = doc(firestore, 'campaigns', campaignId, 'players', player.id);
-    setError(null);
-    try {
-      await setDoc(playerRef, { position: areaId, updatedAt: serverTimestamp() }, { merge: true });
-    } catch {
-      setError('移動を保存できませんでした。ネットワーク接続とFirestoreのルールを確認してください。');
-    }
-  }, [player, position]);
-
   const value = useMemo(() => ({
     players: PLAYERS,
     activePlayerId: player.id,
     activePlayer: player,
     instances,
-    position,
     isLoading,
     error,
     equipItem: (instanceId: string, slot: EquipSlotType) => void commit({ type: 'EQUIP', instanceId, slot }),
@@ -187,8 +166,7 @@ export function InventoryProvider({ playerId, children }: { playerId: string; ch
     returnToStash: (instanceId: string) => void commit({ type: 'RETURN_TO_STASH', instanceId }),
     addItemToStash: (itemId: string) => void commit({ type: 'ADD_ITEM', itemId }),
     resetActivePlayer: () => void commit({ type: 'RESET_PLAYER', player }),
-    movePlayerTo: (areaId: string) => void movePlayerTo(areaId),
-  }), [commit, error, instances, isLoading, player, position, movePlayerTo]);
+  }), [commit, error, instances, isLoading, player]);
 
   return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;
 }

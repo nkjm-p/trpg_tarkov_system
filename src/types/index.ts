@@ -83,3 +83,16 @@ export interface PlacedItem {
   x: number;
   y: number;
 }
+
+// ── マップ関連 ─────────────────────────────
+export interface MapAreaDef {
+  id: string;
+  name: string;
+  /** マップグリッド上のX座標(マス単位) */
+  x: number;
+  /** マップグリッド上のY座標(マス単位) */
+  y: number;
+  description?: string;
+  /** このエリアからルート移動可能な隣接エリアのID一覧(双方向で記述すること) */
+  connections: string[];
+}

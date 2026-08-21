@@ -9,6 +9,7 @@ import { StashPanel } from './components/StashPanel';
 import { EquipmentPanel } from './components/EquipmentPanel';
 import { ItemCatalogPanel } from './components/ItemCatalogPanel';
 import { PlayerTabs } from './components/PlayerTabs';
+import { MapPanel } from './components/MapPanel';
 
 function navigate(path: string) {
   window.history.pushState({}, '', path);
@@ -63,16 +64,34 @@ function SyncNotice() {
   </div>;
 }
 
+// function InventoryWorkspace({ isGm, onPlayerChange }: { isGm: boolean; onPlayerChange?: (id: string) => void }) {
+//   const { activePlayer } = useInventory();
+//   return <div className="flex h-screen flex-col bg-tarkov-bg">
+//     <header className="flex items-center gap-3 border-b border-tarkov-border bg-tarkov-panel px-4 py-3">
+//       <div><h1 className="stencil text-lg text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1><p className="text-xs text-tarkov-textDim">{isGm ? 'GM管理画面' : `${activePlayer.name} のインベントリ`}</p></div>
+//       <button type="button" onClick={() => navigate(isGm ? '/' : '/player')} className="ml-auto rounded border border-tarkov-border px-2 py-1 text-xs text-tarkov-textDim hover:border-tarkov-accent">戻る</button>
+//     </header>
+//     {isGm && onPlayerChange && <PlayerTabs onPlayerChange={onPlayerChange} />}
+//     <SyncNotice />
+//     <main className="flex-1 overflow-y-auto"><DndArea /></main>
+//   </div>;
+// }
+
 function InventoryWorkspace({ isGm, onPlayerChange }: { isGm: boolean; onPlayerChange?: (id: string) => void }) {
   const { activePlayer } = useInventory();
+  const [activeTab, setActiveTab] = useState<'inventory' | 'map'>('inventory');
   return <div className="flex h-screen flex-col bg-tarkov-bg">
     <header className="flex items-center gap-3 border-b border-tarkov-border bg-tarkov-panel px-4 py-3">
       <div><h1 className="stencil text-lg text-tarkov-accent">ESCAPE FROM CONSPIRACY</h1><p className="text-xs text-tarkov-textDim">{isGm ? 'GM管理画面' : `${activePlayer.name} のインベントリ`}</p></div>
-      <button type="button" onClick={() => navigate(isGm ? '/' : '/player')} className="ml-auto rounded border border-tarkov-border px-2 py-1 text-xs text-tarkov-textDim hover:border-tarkov-accent">戻る</button>
+      <div className="ml-auto flex gap-1">
+        <button type="button" onClick={() => setActiveTab('inventory')} className={`stencil rounded border px-3 py-1 text-xs ${activeTab === 'inventory' ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent' : 'border-tarkov-border text-tarkov-textDim hover:border-tarkov-accentDim'}`}>インベントリ</button>
+        <button type="button" onClick={() => setActiveTab('map')} className={`stencil rounded border px-3 py-1 text-xs ${activeTab === 'map' ? 'border-tarkov-accent bg-tarkov-accent/15 text-tarkov-accent' : 'border-tarkov-border text-tarkov-textDim hover:border-tarkov-accentDim'}`}>マップ</button>
+      </div>
+      <button type="button" onClick={() => navigate(isGm ? '/' : '/player')} className="rounded border border-tarkov-border px-2 py-1 text-xs text-tarkov-textDim hover:border-tarkov-accent">戻る</button>
     </header>
     {isGm && onPlayerChange && <PlayerTabs onPlayerChange={onPlayerChange} />}
     <SyncNotice />
-    <main className="flex-1 overflow-y-auto"><DndArea /></main>
+    <main className="flex-1 overflow-y-auto">{activeTab === 'inventory' ? <DndArea /> : <MapPanel />}</main>
   </div>;
 }
 
