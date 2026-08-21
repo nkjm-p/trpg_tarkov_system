@@ -4,6 +4,8 @@ import type { ItemDefinition } from '../types';
  * 「Escape from Conspiracy」シナリオ用のオリジナルアイテムマスタ。
  * 実在の銃器商標等は使用せず、架空の型番・名称で構成しています。
  * GM側で自由に増減・カスタマイズしてください。
+ * rarity: ルート抽選時の出現率(%)。10=レア, 30=中間, 50=一般的。
+ * tags: ルート抽選時のタグ。省略時は category がそのまま使われる。
  */
 export const ITEM_DEFINITIONS: ItemDefinition[] = [
   // ── 武器 ─────────────────────────────
@@ -17,6 +19,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8a9a5b',
     equipSlot: 'primaryWeapon',
     description: '5.45mm弾を使用する信頼性の高いアサルトライフル。',
+    rarity: 10,
   },
   {
     id: 'wpn_vektor_smg',
@@ -28,6 +31,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8a9a5b',
     equipSlot: 'primaryWeapon',
     description: '近距離戦闘向けの軽量SMG。',
+    rarity: 10,
   },
   {
     id: 'wpn_longshot',
@@ -39,6 +43,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8a9a5b',
     equipSlot: 'primaryWeapon',
     description: '長距離狙撃に適したボルトアクションライフル。',
+    rarity: 10,
   },
   {
     id: 'wpn_m9talon',
@@ -50,6 +55,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8a9a5b',
     equipSlot: 'secondaryWeapon',
     description: '標準的な9mm拳銃。ホルスターにも収まる。',
+    rarity: 30,
   },
 
   // ── 弾薬 ─────────────────────────────
@@ -62,6 +68,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '📦',
     color: '#c9a13b',
     description: '30発入りの弾薬箱。',
+    rarity: 50,
   },
   {
     id: 'ammo_762',
@@ -72,6 +79,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '📦',
     color: '#c9a13b',
     description: '30発入りの弾薬箱。',
+    rarity: 50,
   },
   {
     id: 'ammo_9mm',
@@ -82,6 +90,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '📦',
     color: '#c9a13b',
     description: '拳銃・SMG用の弾薬箱。',
+    rarity: 50,
   },
 
   // ── 弾倉 ─────────────────────────────
@@ -94,6 +103,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '📤',
     color: '#959976',
     description: '5.45mm弾を30発装填可能なマガジン。',
+    rarity: 30,
   },
   {
     id: 'mag_762_30',
@@ -104,6 +114,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '📤',
     color: '#959976',
     description: '7.62mm弾を30発装填可能なマガジン。',
+    rarity: 30,
   },
   {
     id: 'mag_9mm_15',
@@ -114,6 +125,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '📤',
     color: '#959976',
     description: '9mm弾を15発装填可能なマガジン。',
+    rarity: 30,
   },
 
   // ── 医療品 ─────────────────────────────
@@ -126,6 +138,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '🩹',
     color: '#b3402f',
     description: '軽度の出血を止める。',
+    rarity: 50,
   },
   {
     id: 'med_kit',
@@ -136,6 +149,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '💊',
     color: '#b3402f',
     description: '重傷の治療に使用する携行医療セット。',
+    rarity: 30,
   },
   {
     id: 'med_painkiller',
@@ -146,6 +160,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '💉',
     color: '#b3402f',
     description: '痛みによる行動不利を一時的に解消する。',
+    rarity: 30,
   },
 
   // ── 食料 ─────────────────────────────
@@ -158,6 +173,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '🥫',
     color: '#5c6b3f',
     description: '腹持ちの良い保存食。',
+    rarity: 50,
   },
   {
     id: 'food_water',
@@ -168,6 +184,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '💧',
     color: '#5c6b3f',
     description: '飲料水。脱水を防ぐ。',
+    rarity: 50,
   },
 
   // ── 防具・装備品(装備スロット専用) ─────────────
@@ -181,6 +198,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8b9089',
     equipSlot: 'headwear',
     description: '頭部を保護するヘルメット。',
+    rarity: 30,
   },
   {
     id: 'gear_helmet5',
@@ -192,6 +210,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8b9089',
     equipSlot: 'headwear',
     description: '頭部を保護する信頼性の高いヘルメット。',
+    rarity: 10,
   },
   {
     id: 'gear_facecover',
@@ -203,6 +222,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8b9089',
     equipSlot: 'faceCover',
     description: '顔面を保護し、素性を隠す。',
+    rarity: 30,
   },
   {
     id: 'gear_earpiece_N',
@@ -214,6 +234,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8b9089',
     equipSlot: 'earpiece',
     description: '周囲の足音を聞き取りやすくする。',
+    rarity: 30,
   },
   {
     id: 'gear_earpiece_S',
@@ -224,7 +245,8 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '🎧',
     color: '#8b9089',
     equipSlot: 'earpiece',
-    description: '周囲の音をかなり聞き取りやすくする。'
+    description: '周囲の音をかなり聞き取りやすくする。',
+    rarity: 10,
   },
   {
     id: 'gear_armor3',
@@ -236,6 +258,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8b9089',
     equipSlot: 'bodyArmor',
     description: '胴体への被弾ダメージを軽減する。',
+    rarity: 30,
   },
   {
     id: 'gear_armor4',
@@ -247,6 +270,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     color: '#8b9089',
     equipSlot: 'bodyArmor',
     description: '胴体への被弾ダメージを軽減する。',
+    rarity: 10,
   },
 
   // ── コンテナ(リグ/バックパック) ─────────────
@@ -261,6 +285,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     equipSlot: 'rig',
     containerGrid: { width: 3, height: 2 },
     description: '小型の収納リグ。3x2マスの収納スペースを持つ。',
+    rarity: 50,
   },
   {
     id: 'container_rig_L',
@@ -273,6 +298,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     equipSlot: 'rig',
     containerGrid: { width: 5, height: 2 },
     description: '中型の収納リグ。5x2マスの収納スペースを持つ。',
+    rarity: 30,
   },
   {
     id: 'container_backpack_S',
@@ -285,6 +311,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     equipSlot: 'backpack',
     containerGrid: { width: 3, height: 4 },
     description: '小型のバックパック。3x4マスの収納スペースを持つ。',
+    rarity: 50,
   },
   {
     id: 'container_backpack_M',
@@ -297,6 +324,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     equipSlot: 'backpack',
     containerGrid: { width: 4, height: 5 },
     description: '中型のバックパック。4x5マスの収納スペースを持つ。',
+    rarity: 30,
   },
   {
     id: 'container_backpack_L',
@@ -309,9 +337,10 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     equipSlot: 'backpack',
     containerGrid: { width: 5, height: 7 },
     description: '大容量のバックパック。5x7マスの収納スペースを持つ。',
+    rarity: 10,
   },
 
-    // ── 貴重品/取引品 ─────────────────────────────
+  // ── 貴重品/取引品 ─────────────────────────────
   {
     id: 'val_goldbar',
     name: '金塊',
@@ -321,6 +350,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '🟨',
     color: '#c9a13b',
     description: '闇市場で高値で取引される貴重品。',
+    rarity: 10,
   },
   {
     id: 'val_circuit',
@@ -331,6 +361,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     icon: '💾',
     color: '#c9a13b',
     description: '交換ミッションで需要のある部品。',
+    rarity: 30,
   },
 
   // ── その他 ─────────────────────────────
@@ -342,7 +373,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 3,
     icon: '⛽',
     color: '#5c6b3f',
-    //description: '燃料として使用できるガソリン。',
+    rarity: 30,
   },
   {
     id: 'misc_battery',
@@ -352,7 +383,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 2,
     icon: '🔋',
     color: '#5c6b3f',
-    //description: '電子機器の電源として使えるバッテリー。',
+    rarity: 30,
   },
   {
     id: 'misc_toolkit',
@@ -362,7 +393,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 2,
     icon: '🔧',
     color: '#5c6b3f',
-    //description: '簡単な修理や工作に使えるツールキット。',
+    rarity: 30,
   },
   {
     id: 'misc_cord',
@@ -372,7 +403,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 1,
     icon: '🔌',
     color: '#5c6b3f',
-    //description: '各種電子部品を繋げるコード。',
+    rarity: 50,
   },
   {
     id: 'misc_ducttape',
@@ -382,7 +413,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 1,
     icon: '🧷',
     color: '#5c6b3f',
-    //description: '物を固定したり補修するのに使える強力なテープ。',
+    rarity: 50,
   },
   {
     id: 'misc_wire',
@@ -392,7 +423,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 1,
     icon: '🕸️',
     color: '#5c6b3f',
-    //description: '電子機器の修理や工作に使えるワイヤー。',
+    rarity: 50,
   },
   {
     id: 'misc_screwdriver',
@@ -402,7 +433,7 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 2,
     icon: '🪛',
     color: '#5c6b3f',
-    //description: '電子機器の修理や工作に使えるドライバー。',
+    rarity: 50,
   },
   {
     id: 'misc_bolt',
@@ -412,8 +443,8 @@ export const ITEM_DEFINITIONS: ItemDefinition[] = [
     height: 1,
     icon: '🔩',
     color: '#5c6b3f',
-    //description: '電子機器の修理や工作に使えるボルト。',
-  }
+    rarity: 50,
+  },
 ];
 
 export function getItemDef(itemId: string): ItemDefinition | undefined {

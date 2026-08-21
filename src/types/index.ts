@@ -98,19 +98,68 @@ export interface PlacedItem {
 // }
 
 
+// // ── マップ機能 ───────────────────────────
+// /** ルートエリア内の個別のルート可能地点(拠点・出口・アイテムスポットなど) */
+// export interface RoutableSpot {
+//   id: string;
+//   name: string;
+//   /** ルートエリア画像上の相対位置(0〜1)。左上原点。 */
+//   x: number;
+//   y: number;
+//   description?: string;
+//   icon?: string;
+// }
+
+// /** マップ上の1エリア。拡大表示するとルート可能地点の詳細が見える。 */
+// export interface RouteAreaDefinition {
+//   id: string;
+//   name: string;
+//   /** 拡大表示用の画像パス(public配下推奨) */
+//   imageUrl: string;
+//   /** 親マップのグリッド座標(マス単位) */
+//   mapX: number;
+//   mapY: number;
+//   /** このエリアが保持するルート可能地点インスタンスのリスト */
+//   routableSpots: RoutableSpot[];
+// }
+
+// /** マップ自体の定義。背景画像 + マス目 + ルートエリア群。 */
+// export interface MapDefinition {
+//   id: string;
+//   name: string;
+//   imageUrl: string;
+//   gridWidth: number;
+//   gridHeight: number;
+//   routeAreas: RouteAreaDefinition[];
+// }
+
+// /** プレイヤーキャラクターのマップ上の現在位置(Firestore同期対象)。 */
+// export interface CharacterMapPosition {
+//   playerId: string;
+//   mapId: string;
+//   x: number;
+//   y: number;
+// }
+
 // ── マップ機能 ───────────────────────────
+export type ThreatLevel = '低' | '中' | '高';
+export type RouteQuality = '低' | '中' | '高';
+export type RouteDensity = '少' | '普' | '多';
+
+/** ルート抽選のタグ。基本はアイテムカテゴリと同じ語彙を使う。 */
+export type LootTag = ItemCategory;
+/** ルート可能地点が持つタグ。'other' は全タグのアイテムが対象になる特別値。 */
+export type SpotLootTag = LootTag | 'other';
+
 /** ルートエリア内の個別のルート可能地点(拠点・出口・アイテムスポットなど) */
 export interface RoutableSpot {
   id: string;
   name: string;
-  /** ルートエリア画像上の相対位置(0〜1)。左上原点。 */
-  x: number;
-  y: number;
-  description?: string;
-  icon?: string;
+  /** このスポットで抽選対象になるアイテムのタグ。'other' を含む場合は全アイテムが対象。 */
+  tags: SpotLootTag[];
 }
 
-/** マップ上の1エリア。拡大表示するとルート可能地点の詳細が見える。 */
+/** マップ上の1エリア。拡大表示すると状況とルート可能地点が見える。 */
 export interface RouteAreaDefinition {
   id: string;
   name: string;
@@ -119,6 +168,14 @@ export interface RouteAreaDefinition {
   /** 親マップのグリッド座標(マス単位) */
   mapX: number;
   mapY: number;
+  /** 接敵率 */
+  engagementRate: ThreatLevel;
+  /** ルート品質(得られるアイテムの質の目安) */
+  routeQuality: RouteQuality;
+  /** ルート箇所の多さ(ルート可能リスト押下時に出現するアイテム種類数の目安) */
+  routeDensity: RouteDensity;
+  /** ボスの有無 */
+  hasBoss: boolean;
   /** このエリアが保持するルート可能地点インスタンスのリスト */
   routableSpots: RoutableSpot[];
 }
@@ -139,4 +196,18 @@ export interface CharacterMapPosition {
   mapId: string;
   x: number;
   y: number;
+}
+
+/** ルート可能地点で生成されたアイテムの1個体(スタック)。 */
+export interface LootItemInstance {
+  id: string;
+  itemId: string;
+  quantity: number;
+}
+
+/** マップ内の1ルート可能地点に紐づく、生成済みルートリストの状態。 */
+export interface SpotLootEntry {
+  mapId: string;
+  spotId: string;
+  items: LootItemInstance[];
 }

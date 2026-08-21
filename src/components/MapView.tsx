@@ -7,7 +7,7 @@ import { CharacterToken } from './CharacterToken';
 import { RouteAreaModal } from './RouteAreaModal';
 import type { RouteAreaDefinition } from '../types';
 
-const TOKEN_COLORS = ['#8a9a5b', '#c9a13b', '#5b8a9a', '#b3402f'];
+const TOKEN_COLORS = ['#064df2', '#ab8118', '#d11ac2', '#cb3923'];
 
 function MapGridCell({ mapId, x, y, widthPercent, heightPercent }: { mapId: string; x: number; y: number; widthPercent: number; heightPercent: number }) {
   const { setNodeRef, isOver } = useDroppable({ id: `mapcell:${mapId}:${x}:${y}`, data: { mapId, x, y } });
@@ -40,7 +40,8 @@ export function MapView({ activePlayerId, isGm }: { activePlayerId?: string; isG
   const [mapId, setMapId] = useState(MAP_DEFINITIONS[0]?.id ?? '');
   const [openArea, setOpenArea] = useState<RouteAreaDefinition | null>(null);
   const mapDef = getMapDef(mapId);
-  const { positions, movePlayer } = useMapState();
+//   const { positions, movePlayer } = useMapState();
+  const { positions, movePlayer, resetMap } = useMapState();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
   const widthPercent = mapDef ? 100 / mapDef.gridWidth : 0;
@@ -79,7 +80,7 @@ export function MapView({ activePlayerId, isGm }: { activePlayerId?: string; isG
 
   return (
     <div className="flex h-full flex-col rounded border border-tarkov-border bg-tarkov-panel">
-      <div className="flex items-center gap-2 border-b border-tarkov-border px-3 py-2">
+      {/* <div className="flex items-center gap-2 border-b border-tarkov-border px-3 py-2">
         <h2 className="stencil text-xs text-tarkov-textDim">マップ</h2>
         {MAP_DEFINITIONS.length > 1 && (
           <select
@@ -90,7 +91,33 @@ export function MapView({ activePlayerId, isGm }: { activePlayerId?: string; isG
             {MAP_DEFINITIONS.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
         )}
-      </div>
+      </div> */}
+      // ヘッダー部分(select の直後)にリセットボタンを追加
+        <div className="flex items-center gap-2 border-b border-tarkov-border px-3 py-2">
+        <h2 className="stencil text-xs text-tarkov-textDim">マップ</h2>
+        {MAP_DEFINITIONS.length > 1 && (
+            <select
+            value={mapId}
+            onChange={(e) => setMapId(e.target.value)}
+            className="ml-2 rounded border border-tarkov-border bg-tarkov-bg px-2 py-1 text-xs text-tarkov-text focus:border-tarkov-accent focus:outline-none"
+            >
+            {MAP_DEFINITIONS.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+            </select>
+        )}
+        {isGm && (
+            <button
+            type="button"
+            onClick={() => {
+                if (window.confirm(`「${mapDef.name}」の配置とルート状況をリセットします。よろしいですか?`)) {
+                resetMap(mapDef.id);
+                }
+            }}
+            className="ml-auto rounded border border-tarkov-danger/50 px-2 py-1 text-[11px] text-tarkov-danger hover:bg-tarkov-danger/10"
+            >
+            マップをリセット
+            </button>
+        )}
+        </div>
 
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         {unplacedPlayers.length > 0 && (
@@ -141,7 +168,9 @@ export function MapView({ activePlayerId, isGm }: { activePlayerId?: string; isG
         </div>
       </DndContext>
 
-      {openArea && <RouteAreaModal area={openArea} onClose={() => setOpenArea(null)} />}
+      {/* {openArea && <RouteAreaModal area={openArea} onClose={() => setOpenArea(null)} />} */}
+      {/* モーダル呼び出し箇所を修正(mapId を渡す) */}
+      {openArea && <RouteAreaModal mapId={mapDef.id} area={openArea} onClose={() => setOpenArea(null)} />}  
     </div>
   );
 }
