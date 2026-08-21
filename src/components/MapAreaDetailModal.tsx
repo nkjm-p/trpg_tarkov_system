@@ -1,8 +1,9 @@
 import { useInventory } from '../store/useInventoryStore';
 import { getRoutableAreas } from '../data/mapAreas';
-import type { MapAreaDef } from '../types';
 
-export function MapAreaDetailModal({ area, isCurrent, onClose }: { area: MapAreaDef; isCurrent: boolean; onClose: () => void }) {
+type MapArea = ReturnType<typeof getRoutableAreas>[number];
+
+export function MapAreaDetailModal({ area, isCurrent, onClose }: { area: MapArea; isCurrent: boolean; onClose: () => void }) {
   const { movePlayerTo } = useInventory();
   const nextAreas = getRoutableAreas(area.id);
 
