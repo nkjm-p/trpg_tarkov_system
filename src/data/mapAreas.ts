@@ -79,6 +79,6 @@ export function getRoutableAreas(areaId: string | null): MapAreaDef[] {
   const current = getMapAreaDef(areaId);
   if (!current) return MAP_AREAS;
   return current.connections
-    .map((id) => getMapAreaDef(id))
-    .filter((area): area is MapAreaDef => Boolean(area));
+    .map((id: string) => getMapAreaDef(id))
+    .filter((area: any): area is MapAreaDef => Boolean(area));
 }
